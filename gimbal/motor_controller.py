@@ -38,7 +38,7 @@ def set_angles(serial, pitch, roll, yaw, is_limited=True):
 
 if __name__ == '__main__':
     # connect to the gimbal serial
-    ser = serial.Serial('COM5', baudrate=115200, timeout=1)
+    ser = serial.Serial('COM12', baudrate=115200, timeout=1)
 
     while ser.is_open:  # making a loop
         try:  # used try so that if user pressed other than the given key error will not be shown

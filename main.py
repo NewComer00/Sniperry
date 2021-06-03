@@ -8,7 +8,7 @@ from mosse import mosse_tracker as tracker
 
 if __name__ == '__main__':
 
-    motor_port = 'COM5'
+    motor_port = 'COM12'
     motor_baudrate = 115200
     motor_serial = serial.Serial(motor_port, baudrate=motor_baudrate)
     motor.set_angles(motor_serial, 0, 0, 0)

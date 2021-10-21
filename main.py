@@ -14,9 +14,9 @@ if __name__ == '__main__':
     motor.set_angles(motor_serial, 0, 0, 0)
     err = numpy.array([0, 0])
     err_integral = numpy.array([0, 0])
-    motor_pid_k = 0.1
-    motor_pid_i = 0.01
-    motor_pid_d = 0.01
+    motor_pid_k = 0.15
+    motor_pid_i = 0.006
+    motor_pid_d = 0.25
 
     detector_target_class = "person"
     detector_threshold = 0.7

@@ -1,5 +1,4 @@
 import enum
-import keyboard
 import serial
 import cv2
 import numpy
@@ -14,18 +13,18 @@ class Status(enum.Enum):
 
 if __name__ == '__main__':
 
-    motor_port = 'COM12'
+    motor_port = 'COM4'
     motor_baudrate = 115200
     motor_serial = serial.Serial(motor_port, baudrate=motor_baudrate)
     motor.set_angles(motor_serial, 0, 0, 0)
     err = numpy.array([0, 0])
     err_integral = numpy.array([0, 0])
-    motor_pid_k = 0.1
-    motor_pid_i = 0.01
-    motor_pid_d = 0.01
+    motor_pid_k = 0.15
+    motor_pid_i = 0.006
+    motor_pid_d = 0.25
 
     detector_target_class = "person"
-    detector_threshold = 0.7
+    detector_threshold = 0.5
     detector_model_file = "./tensorflow_lite/data/mobnet_v3_coco_official.tflite"
     detector_label_file = "./tensorflow_lite/data/labelmap.txt"
 

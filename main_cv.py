@@ -11,6 +11,30 @@ class Status(enum.Enum):
     TRACKING = enum.auto()
 
 
+# mouse call-back function
+def on_mouse(event, x, y, flags, param):
+    global frame
+    global status
+    global detect_locations
+
+    global tracker_init_bbox
+    global tracker_init_frame
+
+    if event == cv2.EVENT_LBUTTONDBLCLK:
+        for i in range(0, len(detect_locations)):
+            tl = tuple(detect_locations[i][[0, 1]])
+            br = tuple(detect_locations[i][[2, 3]])
+            if tl[0] < x < br[0] and tl[1] < y < br[1]:
+                # store vars for tracker
+                tracker_init_bbox = (detect_locations[i][0],
+                                     detect_locations[i][1],
+                                     detect_locations[i][2] - detect_locations[i][0],
+                                     detect_locations[i][3] - detect_locations[i][1])
+                tracker_init_frame = frame
+                break
+        status = Status.TRACKING
+
+
 if __name__ == '__main__':
 
     motor_port = 'COM4'
@@ -23,17 +47,21 @@ if __name__ == '__main__':
     motor_pid_i = 0.006
     motor_pid_d = 0.25
 
-    detector_target_class = "person"
-    detector_threshold = 0.5
+    detector_threshold = 0.6
     detector_model_file = "./tensorflow_lite/data/mobnet_v3_coco_official.tflite"
     detector_label_file = "./tensorflow_lite/data/labelmap.txt"
 
     tracker = cv2.legacy.TrackerMOSSE_create()
     tracker_frame_ctr = 0
 
-    cap = cv2.VideoCapture(1)
+    window_name = "caps"
+    cv2.namedWindow(window_name)
+    cv2.setMouseCallback(window_name, on_mouse)
+
+    cap = cv2.VideoCapture(0)
     _, frame = cap.read()
     FRAME_HEIGHT, FRAME_WIDTH, _ = frame.shape
+
     status = Status.DETECTING
     while True:
         _, frame = cap.read()
@@ -47,25 +75,14 @@ if __name__ == '__main__':
                                 threshold=detector_threshold)
 
             for i in range(0, len(detect_scores)):
-                if detect_labels[i] == detector_target_class:
-                    print("detected: %f\t%s\n" % (detect_scores[i], detect_labels[i]))
-
-                    top_left = tuple(detect_locations[i][[0, 1]])
-                    bottom_right = tuple(detect_locations[i][[2, 3]])
-                    color = (255, 0, 0)
-                    thickness = 3
-                    frame = cv2.rectangle(frame, top_left, bottom_right, color, thickness)
-                    cv2.imshow("cap", frame)
-                    cv2.waitKey(2000)
-
-                    # store vars for tracker
-                    tracker_init_bbox = (detect_locations[i][0],
-                                         detect_locations[i][1],
-                                         detect_locations[i][2] - detect_locations[i][0],
-                                         detect_locations[i][3] - detect_locations[i][1])
-                    tracker_init_frame = frame
-                    status = Status.TRACKING
-                    break
+                # print("detected: %f\t%s\n" % (detect_scores[i], detect_labels[i]))
+                top_left = tuple(detect_locations[i][[0, 1]])
+                bottom_right = tuple(detect_locations[i][[2, 3]])
+                color = (255, 0, 0)
+                thickness = 3
+                frame = cv2.rectangle(frame, top_left, bottom_right, color, thickness)
+                cv2.imshow(window_name, frame)
+                cv2.waitKey(1)
 
         # object tracking
         if status is Status.TRACKING:
@@ -106,7 +123,7 @@ if __name__ == '__main__':
                                  0,
                                  -pid_vector[0])
 
-        cv2.imshow("cap", frame)
+        cv2.imshow(window_name, frame)
         cv2.waitKey(10)
 
     cap.release()

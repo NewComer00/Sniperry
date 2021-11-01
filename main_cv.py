@@ -64,7 +64,10 @@ if __name__ == '__main__':
     motor_kp = 0.15
     motor_ki = 0.006
     motor_kd = 0.25
-    pid = pid_controller.PIDController(motor_kp, motor_ki, motor_kd, 2)
+    # we use incremental pid to avoid the shaking when re-tracking the target
+    # because re-tracking will reset the intergral history needed by positional pid
+    pid_type = pid_controller.PIDController.PIDType.INCREMENTAL
+    pid = pid_controller.PIDController.get_pid_controller(pid_type)(motor_kp, motor_ki, motor_kd, 2)
 
     detector_threshold = 0.6
     detector_model_file = "./tensorflow_lite/data/mobnet_v3_coco_official.tflite"
@@ -149,7 +152,7 @@ if __name__ == '__main__':
                 bbox_center = numpy.array([bbox[0] + bbox[2]/2, bbox[1] + bbox[3]/2])
                 screen_center = numpy.array([FRAME_WIDTH/2, FRAME_HEIGHT/2])
                 pid_signal = pid.update(bbox_center, screen_center)
-                motor.set_angles(pid_signal[1], 0, -pid_signal[0])
+                motor.increase_angles(pid_signal[1], 0, -pid_signal[0])
 
             # if target is lost ...
             else:

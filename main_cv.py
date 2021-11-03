@@ -67,7 +67,8 @@ if __name__ == '__main__':
     # we use incremental pid to avoid the shaking when re-tracking the target
     # because re-tracking will reset the intergral history needed by positional pid
     pid_type = pid_controller.PIDController.PIDType.INCREMENTAL
-    pid = pid_controller.PIDController.get_pid_controller(pid_type)(motor_kp, motor_ki, motor_kd, 2)
+    pid = pid_controller.PIDController.get_pid_controller(pid_type)(
+        motor_kp, motor_ki, motor_kd, 2)
 
     detector_threshold = 0.6
     detector_model_file = "./tensorflow_lite/data/mobnet_v3_coco_official.tflite"

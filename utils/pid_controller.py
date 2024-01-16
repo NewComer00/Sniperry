@@ -68,7 +68,7 @@ class PIDPositional(PIDController):
         err_pre = self._err
         self._err = current_signal - target_signal
         self._err_integral += self._err
-        print(self._err_integral)
+        # print(self._err_integral)
         err_diff = self._err - err_pre
         output_signal = \
             self._kp * self._err + self._ki * self._err_integral + self._kd * err_diff
